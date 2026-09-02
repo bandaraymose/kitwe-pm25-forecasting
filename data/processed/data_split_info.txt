@@ -1,0 +1,28 @@
+PM2.5 Time Series Data Split Information
+==================================================
+
+TRAIN SET:
+  Records: 2,733
+  Date range: 2015-04-01 00:00:00 to 2022-12-31 00:00:00
+  PM2.5 mean: 2.46 µg/m³
+  PM2.5 std: 0.77 µg/m³
+  PM2.5 range: 0.61 - 4.69 µg/m³
+
+VALIDATION SET:
+  Records: 365
+  Date range: 2023-01-01 00:00:00 to 2023-12-31 00:00:00
+  PM2.5 mean: 2.71 µg/m³
+  PM2.5 std: 0.67 µg/m³
+  PM2.5 range: 0.85 - 4.51 µg/m³
+
+TEST SET:
+  Records: 366
+  Date range: 2024-01-01 00:00:00 to 2024-12-31 00:00:00
+  PM2.5 mean: 2.70 µg/m³
+  PM2.5 std: 0.61 µg/m³
+  PM2.5 range: 1.04 - 4.14 µg/m³
+
+SPLIT RATIO:
+  Train: 78.9% (2,733 records)
+  Validation: 10.5% (365 records)
+  Test: 10.6% (366 records)

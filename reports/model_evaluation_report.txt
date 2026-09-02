@@ -1,0 +1,49 @@
+PM2.5 FORECASTING MODEL EVALUATION REPORT==================================================
+
+MODEL PERFORMANCE COMPARISON
+------------------------------
+  Model     RMSE      MAE      MAPE      MSE             Parameters  AIC  Holidays Total_Params  Rank_RMSE  Rank_MAE  Rank_MAPE  Overall_Rank
+   LSTM 0.704081 0.563595 29.588345 0.495730 2×50 LSTM, Dropout=0.2  NaN       NaN       39,651        2.0       2.0        2.0      2.000000
+PROPHET 0.724550 0.577575 24.276418 0.524973 Yearly+Weekly+Holidays  NaN      50.0          NaN        3.0       3.0        1.0      2.333333
+  ARIMA 0.652559 0.522900       NaN      NaN         ARIMA(1, 0, 1)  inf       NaN          NaN        1.0       1.0        NaN           NaN
+
+FORECAST SUMMARY
+--------------------
+  Model Forecast_Period  Mean_PM25  Std_PM25  Min_PM25  Max_PM25
+  ARIMA          7 days   1.855819  0.055594  1.775785  1.930182
+  ARIMA         30 days   2.063400  0.144047  1.775785  2.254945
+PROPHET          7 days   2.477228  0.039894  2.440635  2.562737
+PROPHET         30 days   2.459256  0.025783  2.421688  2.562737
+   LSTM          7 days   2.270504  0.005162  2.260099  2.275317
+   LSTM         30 days   2.276134  0.004609  2.260099  2.281893
+
+
+MODEL RECOMMENDATIONS
+
+BEST OVERALL PERFORMER: LSTM
+   • RMSE: 0.7041
+   • Best for: Overall accuracy and reliability
+
+MODEL STRENGTHS:
+
+   LSTM: Deep learning with temporal patterns
+          • Best for complex non-linear relationships
+          • Captures long-term dependencies
+   PROPHET: Business-ready forecasting
+          • Best for interpretability and holidays
+          • Handles missing data well
+
+USAGE RECOMMENDATIONS:
+   • Production use: LSTM
+   • Quick forecasts: ARMA
+   • Business reporting: Prophet
+   • Research/Complex patterns: LSTM
+
+DATA SUMMARY
+---------------
+• Training period: 2015-2022 (8 years)
+• Validation period: 2023 (1 year)
+• Test period: 2024 (1 year)
+• Total observations: 3,554 (after preprocessing)
+• Features engineered: 53 total
+• LSTM sequence length: 30 days

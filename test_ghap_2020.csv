@@ -1,0 +1,10 @@
+date,pm25_ug_m3,longitude,latitude,source,frequency
+2020-01-01,2.9920408229438626,28.213,-12.8167,projects/sat-io/open-datasets/GHAP/GHAP_D1K_PM25,daily
+2020-01-02,2.3843877967523066,28.213,-12.8167,projects/sat-io/open-datasets/GHAP/GHAP_D1K_PM25,daily
+2020-01-03,1.90229590085088,28.213,-12.8167,projects/sat-io/open-datasets/GHAP/GHAP_D1K_PM25,daily
+2020-01-04,3.165408211338277,28.213,-12.8167,projects/sat-io/open-datasets/GHAP/GHAP_D1K_PM25,daily
+2020-01-05,1.5632142884390694,28.213,-12.8167,projects/sat-io/open-datasets/GHAP/GHAP_D1K_PM25,daily
+2020-01-06,2.1273469886001277,28.213,-12.8167,projects/sat-io/open-datasets/GHAP/GHAP_D1K_PM25,daily
+2020-01-07,2.2963266109933653,28.213,-12.8167,projects/sat-io/open-datasets/GHAP/GHAP_D1K_PM25,daily
+2020-01-08,2.6458673954010004,28.213,-12.8167,projects/sat-io/open-datasets/GHAP/GHAP_D1K_PM25,daily
+2020-01-09,3.204489793582838,28.213,-12.8167,projects/sat-io/open-datasets/GHAP/GHAP_D1K_PM25,daily

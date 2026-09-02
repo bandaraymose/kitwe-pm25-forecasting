@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+.venv/
+venv/
+env/
+.env
+*.egg-info/
+dist/
+build/
+
+# Data & models (large)
+data/raw/*.csv
+data/processed/*.csv
+data/predictions/*.csv
+!data/raw/.gitkeep
+models/*.pkl
+models/*.h5
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Logs
+outputs/logs/*
+!outputs/logs/.gitkeep
