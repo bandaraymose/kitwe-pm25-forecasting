@@ -25,6 +25,14 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, Tabl
 from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
 warnings.filterwarnings('ignore')
 
+
+def _plotly_to_png(figure):
+    """Render a Plotly figure when a compatible browser renderer is available."""
+    try:
+        return pio.to_image(figure, format="png", scale=2)
+    except Exception:
+        return None
+
 # Professional configuration
 st.set_page_config(
     page_title="Air Quality Monitoring System - Kitwe, Zambia",
@@ -409,8 +417,9 @@ def generate_pdf_report(df, start_date, end_date, data):
         xaxis_title="Date", yaxis_title="PM2.5 (µg/m³)",
         height=380, template="plotly_white",
         margin=dict(l=60, r=40, t=50, b=50))
-    trend_img = pio.to_image(fig_trend, format="png", scale=2)
-    story.append(Image(io.BytesIO(trend_img), width=6.5*inch, height=3.1*inch))
+    trend_img = _plotly_to_png(fig_trend)
+    if trend_img:
+        story.append(Image(io.BytesIO(trend_img), width=6.5*inch, height=3.1*inch))
     story.append(Paragraph(
         f"Figure 1 — Daily PM2.5 concentrations from {start_date} to {end_date}. "
         f"Overall average: {mean_val:.2f} µg/m³.",
@@ -462,8 +471,9 @@ def generate_pdf_report(df, start_date, end_date, data):
         xaxis_title="Month", yaxis_title="Average PM2.5 (µg/m³)",
         height=360, template="plotly_white",
         margin=dict(l=60, r=40, t=50, b=50))
-    seasonal_img = pio.to_image(fig_seasonal, format="png", scale=2)
-    story.append(Image(io.BytesIO(seasonal_img), width=6.5*inch, height=2.9*inch))
+    seasonal_img = _plotly_to_png(fig_seasonal)
+    if seasonal_img:
+        story.append(Image(io.BytesIO(seasonal_img), width=6.5*inch, height=2.9*inch))
     story.append(Paragraph(
         "Figure 2 — Monthly average PM2.5 concentration, showing seasonal variation.",
         styles['FigureCaption']))
@@ -625,8 +635,9 @@ def generate_pdf_report(df, start_date, end_date, data):
                 title="7-Day PM2.5 Forecast", xaxis_title="Date",
                 yaxis_title="PM2.5 (µg/m³)", height=340, template="plotly_white",
                 margin=dict(l=60, r=40, t=50, b=50))
-            img7 = pio.to_image(fig7, format="png", scale=2)
-            story.append(Image(io.BytesIO(img7), width=6.5*inch, height=2.7*inch))
+            img7 = _plotly_to_png(fig7)
+            if img7:
+                story.append(Image(io.BytesIO(img7), width=6.5*inch, height=2.7*inch))
             story.append(Paragraph(
                 "Figure 3 — Seven-day forecast of PM2.5 concentration.",
                 styles['FigureCaption']))
@@ -654,8 +665,9 @@ def generate_pdf_report(df, start_date, end_date, data):
                 xaxis_title="Date", yaxis_title="PM2.5 (µg/m³)",
                 height=340, template="plotly_white",
                 margin=dict(l=60, r=40, t=50, b=50))
-            img30 = pio.to_image(fig30, format="png", scale=2)
-            story.append(Image(io.BytesIO(img30), width=6.5*inch, height=2.7*inch))
+            img30 = _plotly_to_png(fig30)
+            if img30:
+                story.append(Image(io.BytesIO(img30), width=6.5*inch, height=2.7*inch))
             story.append(Paragraph(
                 "Figure 4 — Thirty-day forecast with uncertainty band. The shaded region "
                 "represents the 80% confidence interval.",
@@ -740,8 +752,9 @@ def generate_pdf_report(df, start_date, end_date, data):
                 xaxis_title="Model", yaxis_title="Metric Value",
                 barmode='group', height=340, template="plotly_white",
                 margin=dict(l=60, r=40, t=50, b=50))
-            mimg = pio.to_image(figm, format="png", scale=2)
-            story.append(Image(io.BytesIO(mimg), width=6.5*inch, height=2.7*inch))
+            mimg = _plotly_to_png(figm)
+            if mimg:
+                story.append(Image(io.BytesIO(mimg), width=6.5*inch, height=2.7*inch))
             story.append(Paragraph(
                 "Figure 5 — Comparative performance of ARIMA, Prophet, and LSTM models.",
                 styles['FigureCaption']))
@@ -1004,22 +1017,34 @@ def create_professional_30day_forecast_plot(models_data):
     fig = go.Figure()
     current_date = pd.Timestamp.now().normalize()
 
-    if 'prophet' in models_data and 'forecast_30d' in models_data['prophet']:
-        forecast = models_data['prophet']['forecast_30d']
+    colors = ['#4a7a00', '#c07020', '#1a6a7a']
+    for i, (model_name, model_data) in enumerate(models_data.items()):
+        if 'forecast_30d' not in model_data:
+            continue
+        forecast = model_data['forecast_30d']
         if isinstance(forecast, pd.DataFrame) and 'yhat' in forecast.columns:
-            future_dates = [current_date + pd.Timedelta(days=i+1) for i in range(len(forecast))]
+            y_values = forecast['yhat'].to_numpy()
+            future_dates = forecast['ds'] if 'ds' in forecast.columns else [
+                current_date + pd.Timedelta(days=day + 1) for day in range(len(y_values))]
+        elif isinstance(forecast, (pd.Series, np.ndarray, list, tuple)):
+            y_values = np.asarray(forecast)
+            future_dates = [current_date + pd.Timedelta(days=day + 1) for day in range(len(y_values))]
+        else:
+            continue
+
+        if len(y_values):
             fig.add_trace(go.Scatter(
                 x=future_dates,
-                y=forecast['yhat'],
+                y=y_values,
                 mode='lines',
-                name='30-Day Prophet Forecast',
-                line=dict(color='#4a7a00', width=2.5, shape='spline'),
+                name=f'{model_name.upper()} 30-Day Forecast',
+                line=dict(color=colors[i % len(colors)], width=2.5, shape='spline'),
                 hovertemplate='Date: %{x}<br>PM2.5: %{y:.2f} µg/m³<extra></extra>'
             ))
-            if 'yhat_lower' in forecast.columns and 'yhat_upper' in forecast.columns:
+            if isinstance(forecast, pd.DataFrame) and {'yhat_lower', 'yhat_upper'} <= set(forecast.columns):
                 fig.add_trace(go.Scatter(
                     x=future_dates,
-                    y=forecast['yhat_upper'],
+                    y=forecast['yhat_upper'].to_numpy(),
                     mode='lines',
                     line=dict(width=0),
                     showlegend=False,
@@ -1027,7 +1052,7 @@ def create_professional_30day_forecast_plot(models_data):
                 ))
                 fig.add_trace(go.Scatter(
                     x=future_dates,
-                    y=forecast['yhat_lower'],
+                    y=forecast['yhat_lower'].to_numpy(),
                     mode='lines',
                     line=dict(width=0),
                     fill='tonexty',
@@ -1065,8 +1090,10 @@ def create_professional_forecast_plot(models_data):
             forecast = model_data['forecast_7d']
             if isinstance(forecast, pd.DataFrame) and 'yhat' in forecast.columns:
                 y_values = forecast['yhat'].values
+            elif isinstance(forecast, (pd.Series, np.ndarray, list, tuple)):
+                y_values = np.asarray(forecast)
             else:
-                y_values = forecast if isinstance(forecast, np.ndarray) else []
+                y_values = []
 
             future_dates = [current_date + pd.Timedelta(days=i+1) for i in range(len(y_values))]
             fig.add_trace(go.Scatter(
@@ -1365,7 +1392,7 @@ def main():
             fig_forecast = create_professional_forecast_plot(models_to_show)
             st.plotly_chart(fig_forecast, width='stretch')
 
-            if 'prophet' in models_to_show:
+            if any('forecast_30d' in model_data for model_data in models_to_show.values()):
                 fig_30d = create_professional_30day_forecast_plot(models_to_show)
                 st.plotly_chart(fig_30d, width='stretch')
 
@@ -1378,16 +1405,20 @@ def main():
                         max_7d = forecast['yhat'].max()
                         min_7d = forecast['yhat'].min()
                     else:
-                        avg_7d = np.mean(forecast) if isinstance(forecast, np.ndarray) else 0
-                        max_7d = np.max(forecast) if isinstance(forecast, np.ndarray) else 0
-                        min_7d = np.min(forecast) if isinstance(forecast, np.ndarray) else 0
+                        values = np.asarray(forecast) if isinstance(
+                            forecast, (pd.Series, np.ndarray, list, tuple)) else np.array([])
+                        avg_7d = values.mean() if len(values) else 0
+                        max_7d = values.max() if len(values) else 0
+                        min_7d = values.min() if len(values) else 0
 
                     status, color, emoji = get_air_quality_status(avg_7d)
                     avg_30d = "N/A"
-                    if model_name == 'prophet' and 'forecast_30d' in model_data:
+                    if 'forecast_30d' in model_data:
                         forecast_30d = model_data['forecast_30d']
                         if isinstance(forecast_30d, pd.DataFrame) and 'yhat' in forecast_30d.columns:
                             avg_30d = f"{forecast_30d['yhat'].mean():.2f}"
+                        elif isinstance(forecast_30d, (pd.Series, np.ndarray, list, tuple)):
+                            avg_30d = f"{np.asarray(forecast_30d).mean():.2f}"
 
                     summary_data.append({
                         'Model': model_name.upper(),
@@ -1403,7 +1434,7 @@ def main():
 
             if 'lstm' in models_to_show and 'forecast_7d' in models_to_show['lstm']:
                 lstm_forecast = models_to_show['lstm']['forecast_7d']
-                avg_forecast = np.mean(lstm_forecast) if isinstance(lstm_forecast, np.ndarray) else 0
+                avg_forecast = np.asarray(lstm_forecast).mean()
                 if avg_forecast <= 15:
                     st.success(f"🟢 **Good Air Quality Expected** - Normal outdoor activities recommended")
                 elif avg_forecast <= 35:
@@ -1414,7 +1445,7 @@ def main():
                     st.error(f"🔴 **Unhealthy Air Quality Expected** - Everyone should avoid prolonged outdoor exertion")
             elif 'arima' in models_to_show and 'forecast_7d' in models_to_show['arima']:
                 arima_forecast = models_to_show['arima']['forecast_7d']
-                avg_forecast = np.mean(arima_forecast) if isinstance(arima_forecast, np.ndarray) else 0
+                avg_forecast = np.asarray(arima_forecast).mean()
                 if avg_forecast <= 15:
                     st.success(f"🟢 **Good Air Quality Expected** - Normal outdoor activities recommended")
                 elif avg_forecast <= 35:
