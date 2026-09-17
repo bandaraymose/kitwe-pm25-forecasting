@@ -409,7 +409,7 @@ def generate_pdf_report(df, start_date, end_date, data):
         xaxis_title="Date", yaxis_title="PM2.5 (µg/m³)",
         height=380, template="plotly_white",
         margin=dict(l=60, r=40, t=50, b=50))
-    trend_img = pio.to_image(fig_trend, format="png", engine="kaleido", scale=2)
+    trend_img = pio.to_image(fig_trend, format="png", scale=2)
     story.append(Image(io.BytesIO(trend_img), width=6.5*inch, height=3.1*inch))
     story.append(Paragraph(
         f"Figure 1 — Daily PM2.5 concentrations from {start_date} to {end_date}. "
@@ -462,7 +462,7 @@ def generate_pdf_report(df, start_date, end_date, data):
         xaxis_title="Month", yaxis_title="Average PM2.5 (µg/m³)",
         height=360, template="plotly_white",
         margin=dict(l=60, r=40, t=50, b=50))
-    seasonal_img = pio.to_image(fig_seasonal, format="png", engine="kaleido", scale=2)
+    seasonal_img = pio.to_image(fig_seasonal, format="png", scale=2)
     story.append(Image(io.BytesIO(seasonal_img), width=6.5*inch, height=2.9*inch))
     story.append(Paragraph(
         "Figure 2 — Monthly average PM2.5 concentration, showing seasonal variation.",
@@ -625,7 +625,7 @@ def generate_pdf_report(df, start_date, end_date, data):
                 title="7-Day PM2.5 Forecast", xaxis_title="Date",
                 yaxis_title="PM2.5 (µg/m³)", height=340, template="plotly_white",
                 margin=dict(l=60, r=40, t=50, b=50))
-            img7 = pio.to_image(fig7, format="png", engine="kaleido", scale=2)
+            img7 = pio.to_image(fig7, format="png", scale=2)
             story.append(Image(io.BytesIO(img7), width=6.5*inch, height=2.7*inch))
             story.append(Paragraph(
                 "Figure 3 — Seven-day forecast of PM2.5 concentration.",
@@ -654,7 +654,7 @@ def generate_pdf_report(df, start_date, end_date, data):
                 xaxis_title="Date", yaxis_title="PM2.5 (µg/m³)",
                 height=340, template="plotly_white",
                 margin=dict(l=60, r=40, t=50, b=50))
-            img30 = pio.to_image(fig30, format="png", engine="kaleido", scale=2)
+            img30 = pio.to_image(fig30, format="png", scale=2)
             story.append(Image(io.BytesIO(img30), width=6.5*inch, height=2.7*inch))
             story.append(Paragraph(
                 "Figure 4 — Thirty-day forecast with uncertainty band. The shaded region "
@@ -740,7 +740,7 @@ def generate_pdf_report(df, start_date, end_date, data):
                 xaxis_title="Model", yaxis_title="Metric Value",
                 barmode='group', height=340, template="plotly_white",
                 margin=dict(l=60, r=40, t=50, b=50))
-            mimg = pio.to_image(figm, format="png", engine="kaleido", scale=2)
+            mimg = pio.to_image(figm, format="png", scale=2)
             story.append(Image(io.BytesIO(mimg), width=6.5*inch, height=2.7*inch))
             story.append(Paragraph(
                 "Figure 5 — Comparative performance of ARIMA, Prophet, and LSTM models.",
