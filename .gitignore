@@ -15,9 +15,13 @@ build/
 data/raw/*.csv
 data/processed/*.csv
 data/predictions/*.csv
+!data/processed/pm25_features.csv
 !data/raw/.gitkeep
 models/*.pkl
 models/*.h5
+!models/arima_model.pkl
+!models/lstm_results.pkl
+!models/prophet_model.pkl
 
 # Jupyter
 .ipynb_checkpoints/
