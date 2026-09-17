@@ -49,6 +49,14 @@ def load_data():
     """Load processed PM2.5 data and model results."""
     data = {}
 
+    def load_optional_pickle(path):
+        try:
+            with open(path, 'rb') as handle:
+                return pickle.load(handle)
+        except (ModuleNotFoundError, ImportError, AttributeError,
+                EOFError, pickle.UnpicklingError):
+            return None
+
     # Get project root - handle both running from dashboard dir and project root
     current_path = Path(__file__).resolve()
     if current_path.name == "professional_app.py":
@@ -74,20 +82,23 @@ def load_data():
     # ARIMA results
     arima_path = models_dir / "arima_model.pkl"
     if arima_path.exists():
-        with open(arima_path, 'rb') as f:
-            data['models']['arima'] = pickle.load(f)
+        arima_model = load_optional_pickle(arima_path)
+        if arima_model is not None:
+            data['models']['arima'] = arima_model
 
     # Prophet results
     prophet_path = models_dir / "prophet_model.pkl"
     if prophet_path.exists():
-        with open(prophet_path, 'rb') as f:
-            data['models']['prophet'] = pickle.load(f)
+        prophet_model = load_optional_pickle(prophet_path)
+        if prophet_model is not None:
+            data['models']['prophet'] = prophet_model
 
     # LSTM results
     lstm_path = models_dir / "lstm_results.pkl"
     if lstm_path.exists():
-        with open(lstm_path, 'rb') as f:
-            data['models']['lstm'] = pickle.load(f)
+        lstm_model = load_optional_pickle(lstm_path)
+        if lstm_model is not None:
+            data['models']['lstm'] = lstm_model
 
     return data
 
